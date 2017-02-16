@@ -78,13 +78,10 @@ void
 QHttpRequestPrivate::prepareHeadersToWrite() {
 
     if ( !iheaders.contains("host") ) {
-        quint16 port = iurl.port();
-        if ( port == 0 )
-            port = 80;
+        const QString portStr = ( -1 != iurl.port() ) ?
+                            QStringLiteral(":%1").arg(iurl.port()) : QString();
 
-        iheaders.insert("host",
-                        QString("%1:%2").arg(iurl.host()).arg(port).toLatin1()
-                        );
+        iheaders.insert("host", (iurl.host() + portStr).toLatin1());
     }
 }
 
