@@ -18,6 +18,7 @@
 
 #include <QTcpServer>
 #include <QLocalServer>
+#include <QWebSocketServer>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -61,8 +62,10 @@ public:
 
     ssl::Config     isslConfig;
 
+    QWebSocketServer iwsServer;
+
 public:
-    explicit    QHttpServerPrivate() = default;
+    explicit    QHttpServerPrivate() : iwsServer("QHTTP", QWebSocketServer::NonSecureMode) {}
 
     virtual    ~QHttpServerPrivate() = default;
 

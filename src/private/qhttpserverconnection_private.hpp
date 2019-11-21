@@ -76,10 +76,8 @@ public:
 public:
     void onReadyRead() {
         while ( isocket.bytesAvailable() > 0 ) {
-            char buffer[4097] = {0};
-            size_t readLength = (size_t) isocket.readRaw(buffer, 4096);
-
-            parse(buffer, readLength);
+            QByteArray buffer(isocket.readRaw());
+            parse(buffer.constData(), buffer.size());
         }
     }
 

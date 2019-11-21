@@ -14,6 +14,7 @@
 
 #include <QTcpSocket>
 #include <QLocalSocket>
+#include <QWebSocketServer>
 #include <QUrl>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
@@ -79,14 +80,27 @@ public:
             itcpSocket->connectToHost(host, port);
     }
 
-    qint64 readRaw(char* buffer, int maxlen) {
-        if ( itcpSocket )
+    qint64 readRaw(char* buffer, qint64 maxlen) {
+        if ( itcpSocket ) {
+            itcpSocket->startTransaction();
             return itcpSocket->read(buffer, maxlen);
-
-        else if ( ilocalSocket )
+        } else if ( ilocalSocket ) {
+            ilocalSocket->startTransaction();
             return ilocalSocket->read(buffer, maxlen);
+        }
 
         return 0;
+    }
+
+    QByteArray readRaw() {
+        if ( itcpSocket) {
+            itcpSocket->startTransaction();
+            return itcpSocket->readAll();
+        } else if ( ilocalSocket ) {
+            ilocalSocket->startTransaction();
+            return ilocalSocket->readAll();
+        }
+        return QByteArray();
     }
 
     void writeRaw(const QByteArray& data) {
@@ -115,10 +129,26 @@ public:
             QObject::disconnect(ilocalSocket, 0, 0, 0);
     }
 
+    void startTransaction() {
+        if (itcpSocket) itcpSocket->startTransaction();
+        if (ilocalSocket) ilocalSocket->startTransaction();
+    }
+
+    void rollbackTransaction() {
+        if (itcpSocket) itcpSocket->rollbackTransaction();
+        if (ilocalSocket) ilocalSocket->rollbackTransaction();
+    }
+
+    void commitTransaction() {
+        if (itcpSocket) itcpSocket->commitTransaction();
+        if (ilocalSocket) ilocalSocket->commitTransaction();
+    }
+
 public:
-    TBackend      ibackendType = ETcpSocket;
-    QTcpSocket*   itcpSocket   = nullptr;
-    QLocalSocket* ilocalSocket = nullptr;
+    TBackend          ibackendType = ETcpSocket;
+    QTcpSocket*       itcpSocket   = nullptr;
+    QLocalSocket*     ilocalSocket = nullptr;
+    QWebSocketServer* iwebSocket = nullptr;
 }; // class QSocket
 
 ///////////////////////////////////////////////////////////////////////////////
