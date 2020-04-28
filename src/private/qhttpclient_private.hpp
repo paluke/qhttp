@@ -107,6 +107,10 @@ protected:
         while ( isocket.bytesAvailable() > 0 ) {
             QByteArray buffer(isocket.readRaw());
             parse(buffer.constData(), buffer.size());
+            if (iparser.http_errno != 0) {
+                release(); // release the socket if parsing failed
+                return;
+            }
         }
     }
 

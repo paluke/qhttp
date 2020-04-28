@@ -78,6 +78,14 @@ public:
         while ( isocket.bytesAvailable() > 0 ) {
             QByteArray buffer(isocket.readRaw());
             parse(buffer.constData(), buffer.size());
+            if (iparser.http_errno != 0) {
+                QHttpResponse response(q_ptr);
+                response.setStatusCode(qhttp::ESTATUS_BAD_REQUEST);
+                response.addHeader("connection", "close");
+                response.end("<h1>400 Bad Request</h1>\n");
+                release(); // release the socket if parsing failed
+                return;
+            }
         }
     }
 
