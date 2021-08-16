@@ -9,7 +9,7 @@ namespace qhttp {
 #   error "to compile QHttp classes, Qt 5.0 or later is needed."
 #endif
 
-#define QHTTP_STATUS_MAP(XX)                    \
+#define QHTTP_STATUS_MAP(XX)                   \
     XX(100, "Continue")                        \
     XX(101, "Switching Protocols")             \
     /* RFC 2518) obsoleted by RFC 4918 */      \

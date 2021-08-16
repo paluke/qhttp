@@ -33,7 +33,7 @@ SOURCES  += \
     qhttpserver.cpp \
     qhttpsslsocket.cpp
 
-PUBLIC_HEADERS  = \
+PUBLIC_HEADERS = \
     ../include/qhttp/qhttpfwd.hpp \
     ../include/qhttp/qhttpheaders.hpp \
     ../include/qhttp/qhttpabstracts.hpp \
@@ -43,6 +43,17 @@ PUBLIC_HEADERS  = \
     ../include/qhttp/qhttpserver.hpp \
     ../include/qhttp/qhttpsslconfig.hpp \
     ../include/qhttp/qhttpsslsocket.hpp
+
+HEADERS += \
+    private/httpparser.hxx \
+    private/httpreader.hxx \
+    private/httpwriter.hxx \
+    private/qhttpbase.hpp \
+    private/qhttpserverconnection_private.hpp \
+    private/qhttpserver_private.hpp \
+    private/qhttpserverrequest_private.hpp \
+    private/qhttpserverresponse_private.hpp \
+    private/qsocket.hpp
 
 contains(DEFINES, QHTTP_HAS_CLIENT) {
     SOURCES += \
@@ -54,6 +65,11 @@ contains(DEFINES, QHTTP_HAS_CLIENT) {
         ../include/qhttp/qhttpclient.hpp \
         ../include/qhttp/qhttpclientresponse.hpp \
         ../include/qhttp/qhttpclientrequest.hpp
+
+    HEADERS += \
+        private/qhttpclient_private.hpp \
+        private/qhttpclientrequest_private.hpp \
+        private/qhttpclientresponse_private.hpp
 }
 
 HEADERS += $$PUBLIC_HEADERS

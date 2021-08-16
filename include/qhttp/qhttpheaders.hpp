@@ -31,6 +31,8 @@ public:
             return false;
 
         const QByteArray& v = QHash<QByteArray, QByteArray>::value(key);
+        if (value.size() != v.size())
+            return false;
         return qstrnicmp(value.constData(), v.constData(), v.size()) == 0;
     }
 

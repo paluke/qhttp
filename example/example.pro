@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-include(../commondir.pri)
+include(example.pri)
 
 SUBDIRS += helloworld
 SUBDIRS += postcollector

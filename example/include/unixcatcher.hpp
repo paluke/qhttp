@@ -13,7 +13,8 @@ inline static void
 catchUnixSignals(std::initializer_list<int> quitSignals) {
     auto handler = [](int s) {
         qDebug("\nquit the application (user request signal = %d).\n", s);
-        QCoreApplication::flush();
+        QCoreApplication::sendPostedEvents();
+        QCoreApplication::processEvents();
         QCoreApplication::quit();
     };
 
