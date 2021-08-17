@@ -2,8 +2,16 @@ equals(ENABLE_QHTTP_CLIENT, "1") {
     DEFINES *= QHTTP_HAS_CLIENT
 }
 
-CONFIG      += c++11 c++14
+!equals(STATIC_LIB, "1") {
+    DEFINES *= QHTTP_DYNAMIC_LIB
+}
 
-INCLUDEPATH += $$PWD/../include
+CONFIG      *= c++14 c++11
 
-LIBS        += $$OUT_PWD/../../src/libqhttp.a
+INCLUDEPATH *= $$PWD/../include
+win32 {
+    CONFIG(release, debug|release): LIBS *= -L$$OUT_PWD/../../src/release -lqhttp
+    CONFIG(debug, debug|release):   LIBS *= -L$$OUT_PWD/../../src/debug -lqhttp
+} else {
+    LIBS *= -L$$OUT_PWD/../../src -lqhttp
+}

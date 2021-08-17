@@ -4,7 +4,14 @@ QT       -= gui
 TARGET    = qhttp
 TEMPLATE  = lib
 
-CONFIG += shared_and_static build_all c++11 c++14
+CONFIG *= build_all c++14 c++11
+
+equals(STATIC_LIB, "1") {
+    CONFIG *= static
+} else {
+    CONFIG *= dynamic
+    DEFINES *= QHTTP_DYNAMIC_LIB
+}
 
 equals(ENABLE_QHTTP_CLIENT, "1") {
     DEFINES *= QHTTP_HAS_CLIENT
@@ -14,9 +21,11 @@ isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
 
-win32-msvc* {
+win32 {
     # inside library, enables msvc dllexport
     DEFINES *= QHTTP_EXPORT
+} else {
+    QMAKE_RPATHDIR = "\$ORIGIN"
 }
 
 INCLUDEPATH += $$PWD/../include $$PWD/../3rdparty

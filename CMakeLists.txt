@@ -39,6 +39,7 @@ set(SOURCES
     ${QHTTP_SRC_DIR}/qhttpserverrequest.cpp 
     ${QHTTP_SRC_DIR}/qhttpserverresponse.cpp 
     ${QHTTP_SRC_DIR}/qhttpserver.cpp
+    ${QHTTP_SRC_DIR}/qhttpsslsocket.cpp
     )
 
 set(HEADERS
@@ -50,6 +51,7 @@ set(HEADERS
     ${QHTTP_INC_DIR_2}/qhttpserverrequest.hpp 
     ${QHTTP_INC_DIR_2}/qhttpserverresponse.hpp 
     ${QHTTP_INC_DIR_2}/qhttpserver.hpp
+    ${QHTTP_INC_DIR_2}/qhttpsslsocket.hpp
     )
 
 find_package(Qt5 COMPONENTS Network WebSockets REQUIRED)

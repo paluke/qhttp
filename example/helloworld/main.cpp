@@ -203,7 +203,7 @@ int main(int argc, char ** argv) {
     } else {
         const auto& mode = posArgs.at(0);
 
-        if ( mode == QLatin1Literal("server") )
+        if ( mode == QLatin1String("server") )
             runServer(parser.value("listen"));
 
 #if defined(QHTTP_HAS_CLIENT)
@@ -213,8 +213,8 @@ int main(int argc, char ** argv) {
         else if ( mode == QLatin1Literal("weather") )
             runWeatherClient(parser.value("geolocation"));
 #else
-        else if ( mode == QLatin1Literal("client")
-                || mode == QLatin1Literal("weather") )
+        else if ( mode == QLatin1String("client")
+                || mode == QLatin1String("weather") )
             qDebug("qhttp::client has not been enabled at build time");
 #endif // QHTTP_HAS_CLIENT
     }
