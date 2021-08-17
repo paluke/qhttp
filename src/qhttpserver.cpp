@@ -1,4 +1,5 @@
 #include <QWebSocket>
+#include <QMetaMethod>
 #include "private/qhttpserver_private.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,8 +96,12 @@ QHttpServer::backendType() const {
 
 void
 QHttpServer::forwardWsConnection() {
+    static const QMetaMethod newWsConnectionSignal = QMetaMethod::fromSignal(&QHttpServer::newWsConnection);
     while (d_func()->iwsServer.hasPendingConnections()) {
-        emit newWsConnection(d_func()->iwsServer.nextPendingConnection());
+        if (isSignalConnected(newWsConnectionSignal))
+            emit newWsConnection(d_func()->iwsServer.nextPendingConnection());
+        else
+            d_func()->iwsServer.nextPendingConnection()->deleteLater();
     }
 }
 
