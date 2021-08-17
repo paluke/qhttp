@@ -12,6 +12,7 @@
 
 #include <QSslKey>
 #include <QSslCertificate>
+#include "qhttpfwd.hpp"
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace ssl {
@@ -19,11 +20,11 @@ namespace ssl {
 // helper functions
 
 /// loads an SSL certificate from filePath.
-QSslCertificate
+QHTTP_API QSslCertificate
 loadCertificate(const QString& filePath, QSsl::EncodingFormat fmt = QSsl::Pem);
 
 /// loads an SSL key (private) from filePath.
-QSslKey
+QHTTP_API QSslKey
 loadKey(
     const QString&       filePath,
     QSsl::KeyAlgorithm   alg = QSsl::Rsa,
