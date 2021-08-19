@@ -187,7 +187,7 @@ QHttpClientPrivate::status(http_parser* parser, const char* at, size_t length) {
     ilastResponse->d_func()->iversion = QString("%1.%2")
                                         .arg(parser->http_major)
                                         .arg(parser->http_minor);
-    ilastResponse->d_func()->icustomStatusMessage = QString::fromUtf8(at, length);
+    ilastResponse->d_func()->icustomStatusMessage = QString::fromUtf8(at, static_cast<int>(length));
 
     return 0;
 }
@@ -212,14 +212,14 @@ QHttpClientPrivate::headerField(http_parser*, const char* at, size_t length) {
         itempHeaderValue.clear();
     }
 
-    itempHeaderField.append(at, length);
+    itempHeaderField.append(at, static_cast<int>(length));
     return 0;
 }
 
 int
 QHttpClientPrivate::headerValue(http_parser*, const char* at, size_t length) {
 
-    itempHeaderValue.append(at, length);
+    itempHeaderValue.append(at, static_cast<int>(length));
     return 0;
 }
 
@@ -258,7 +258,7 @@ QHttpClientPrivate::body(http_parser*, const char* at, size_t length) {
         return 0;
     }
 
-    emit ilastResponse->data(QByteArray(at, length));
+    emit ilastResponse->data(QByteArray(at, static_cast<int>(length)));
     return 0;
 }
 
