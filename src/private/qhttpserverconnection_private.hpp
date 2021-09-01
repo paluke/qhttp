@@ -117,8 +117,8 @@ private:
             auto sslsok = new ssl::Socket(q_func());
             sslsok->setup(sslConfig);
             sslsok->setSocketDescriptor(sokDesc);
-            sslsok->startServerEncryption();
             sslsok->setPeerVerifyMode(QSslSocket::VerifyNone);
+            sslsok->startServerEncryption();
             isocket.itcpSocket = sslsok;
 
         } else {
