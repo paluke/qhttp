@@ -150,9 +150,6 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
         ilastRequest->d_func()->iremotePort    = 0; // not used in local sockets
     }
 
-    if ( ilastResponse )
-        ilastResponse->deleteLater();
-
     if ( isocket.ibackendType == ETcpSocket &&
          ilastRequest->d_func()->iheaders.keyHasValue("upgrade", "websocket") &&
          ilastRequest->d_func()->iheaders.keyHasValue("connection", "Upgrade" )) {
@@ -161,7 +158,6 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
 
         // We don't need the request anymore
         QObject::disconnect(ilastRequest, nullptr, nullptr, nullptr);
-        ilastRequest->deleteLater();
 
         // Disconnect socket to avoid triggering readyRead()
         isocket.disconnectAllQtConnections();
@@ -169,15 +165,19 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
         // We need to rollback data to pass to QWebSocketServer.
         isocket.rollbackTransaction();
 
-        emit q_ptr->newWebsocketUpgrade(isocket.itcpSocket);
-
         // REmove parenting and references
         isocket.itcpSocket->setParent(nullptr);
+
+        emit q_ptr->newWebsocketUpgrade(isocket.itcpSocket);
+
         isocket.itcpSocket = nullptr;
         release();
 
-        return 0;
+        return 2;
     }
+
+    if ( ilastResponse )
+        ilastResponse->deleteLater();
 
     // Validate data, we won't need to rollback.
     isocket.commitTransaction();

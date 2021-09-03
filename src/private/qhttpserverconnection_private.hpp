@@ -86,6 +86,8 @@ public:
                 release(); // release the socket if parsing failed
                 return;
             }
+            if (iparser.upgrade)
+                return;
         }
     }
 

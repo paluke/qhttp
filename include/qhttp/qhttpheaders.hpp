@@ -26,14 +26,14 @@ public:
 
     /** checks if a header has the specified value ignoring the case of the
      * characters. */
-    bool keyHasValue(const QByteArray& key, const QByteArray& value) const {
+    bool keyHasValue(const QByteArray& key, const QByteArray& val) const {
         if ( !contains(key) )
             return false;
 
-        const QByteArray& v = QHash<QByteArray, QByteArray>::value(key);
-        if (value.size() != v.size())
-            return false;
-        return qstrnicmp(value.constData(), v.constData(), v.size()) == 0;
+        for (const QByteArray &hVal : value(key).split(','))
+            if (val.compare(hVal.trimmed(), Qt::CaseInsensitive) == 0)
+                return true;
+        return false;
     }
 
     template<class Func>
