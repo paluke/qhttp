@@ -140,6 +140,9 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
                 itempHeaderValue
                 );
 
+    itempHeaderField.clear();
+    itempHeaderValue.clear();
+
     // set client information
     if ( isocket.ibackendType == ETcpSocket ) {
         ilastRequest->d_func()->iremoteAddress = isocket.itcpSocket->peerAddress().toString();
