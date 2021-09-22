@@ -153,9 +153,7 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
         ilastRequest->d_func()->iremotePort    = 0; // not used in local sockets
     }
 
-    if ( isocket.ibackendType == ETcpSocket &&
-         ilastRequest->d_func()->iheaders.keyHasValue("upgrade", "websocket") &&
-         ilastRequest->d_func()->iheaders.keyHasValue("connection", "Upgrade" )) {
+    if ( isocket.ibackendType == ETcpSocket && parser->upgrade ) {
         // QWebsocketServer will handle the tcp socket from there
         // Using QWebSocketServer::handleConnection
 
@@ -168,7 +166,7 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
         // We need to rollback data to pass to QWebSocketServer.
         isocket.rollbackTransaction();
 
-        // REmove parenting and references
+        // Remove parenting and references
         isocket.itcpSocket->setParent(nullptr);
 
         emit q_ptr->newWebsocketUpgrade(isocket.itcpSocket);
@@ -186,11 +184,10 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
     isocket.commitTransaction();
     ilastResponse = new QHttpResponse(q_func());
 
-    if ( parser->http_major < 1 || parser->http_minor < 1  )
-        ilastResponse->d_func()->ikeepAlive = false;
+    ilastResponse->d_func()->ikeepAlive = ::http_should_keep_alive(parser);
 
     // close the connection if response was the last packet
-    QObject::connect(ilastResponse, &QHttpResponse::done, [this](bool wasTheLastPacket){
+    QObject::connect(ilastResponse, &QHttpResponse::done, q_ptr, [this](bool wasTheLastPacket){
         ikeepAlive = !wasTheLastPacket;
         if ( wasTheLastPacket ) {
             isocket.flush();
