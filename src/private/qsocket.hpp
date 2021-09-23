@@ -28,125 +28,97 @@ class QSocket
 {
 public:
     void close() {
-        if ( itcpSocket ) {
-            itcpSocket->disconnectFromHost();
-            itcpSocket->close();
+        if ( igenericSocket ) {
+            if (ibackendType == ETcpSocket)
+                static_cast<QTcpSocket*>(igenericSocket)->disconnectFromHost();
+            igenericSocket->close();
         }
-
-        if ( ilocalSocket )
-            ilocalSocket->close();
     }
 
     void release() {
         close();
-        if ( itcpSocket )
-            itcpSocket->deleteLater();
+        if ( igenericSocket )
+            igenericSocket->deleteLater();
 
-        if ( ilocalSocket )
-            ilocalSocket->deleteLater();
-
-        itcpSocket   = nullptr;
-        ilocalSocket = nullptr;
+        igenericSocket   = nullptr;
     }
 
     void flush() {
-        if ( itcpSocket )
-            itcpSocket->flush();
-
-        else if ( ilocalSocket )
-            ilocalSocket->flush();
+        if ( igenericSocket ) {
+            if ( ibackendType == ETcpSocket )
+                static_cast<QTcpSocket*>(igenericSocket)->flush();
+            else if ( ibackendType == ELocalSocket )
+                static_cast<QLocalSocket*>(igenericSocket)->flush();
+        }
     }
 
     bool isOpen() const {
-        if ( ibackendType == ETcpSocket    &&    itcpSocket )
-            return itcpSocket->isOpen()
-                && itcpSocket->state() == QTcpSocket::ConnectedState;
-
-        else if ( ibackendType == ELocalSocket    &&    ilocalSocket )
-            return ilocalSocket->isOpen()
-                && ilocalSocket->state() == QLocalSocket::ConnectedState;
-
+        if ( igenericSocket && igenericSocket->isOpen() ) {
+            if ( ibackendType == ETcpSocket )
+                return static_cast<QTcpSocket*>(igenericSocket)->state() == QTcpSocket::ConnectedState;
+            else if ( ibackendType == ELocalSocket )
+                return static_cast<QLocalSocket*>(igenericSocket)->state() == QLocalSocket::ConnectedState;
+        }
         return false;
     }
 
     void connectTo(const QUrl& url) {
-        if ( ilocalSocket )
-            ilocalSocket->connectToServer(url.path());
+        if ( igenericSocket && ibackendType == ELocalSocket )
+            static_cast<QLocalSocket*>(igenericSocket)->connectToServer(url.path());
     }
 
     void connectTo(const QString& host, quint16 port) {
-        if ( itcpSocket )
-            itcpSocket->connectToHost(host, port);
+        if ( igenericSocket && ibackendType == ETcpSocket )
+            static_cast<QTcpSocket*>(igenericSocket)->connectToHost(host, port);
     }
 
     qint64 readRaw(char* buffer, qint64 maxlen) {
-        if ( itcpSocket ) {
-            itcpSocket->startTransaction();
-            return itcpSocket->read(buffer, maxlen);
-        } else if ( ilocalSocket ) {
-            ilocalSocket->startTransaction();
-            return ilocalSocket->read(buffer, maxlen);
-        }
-
+        startTransaction();
+        if ( igenericSocket )
+            return igenericSocket->read(buffer, maxlen);
         return 0;
     }
 
     QByteArray readRaw() {
-        if ( itcpSocket) {
-            itcpSocket->startTransaction();
-            return itcpSocket->readAll();
-        } else if ( ilocalSocket ) {
-            ilocalSocket->startTransaction();
-            return ilocalSocket->readAll();
-        }
+        startTransaction();
+        if ( igenericSocket )
+            return igenericSocket->readAll();
         return QByteArray();
     }
 
     void writeRaw(const QByteArray& data) {
-        if ( itcpSocket )
-            itcpSocket->write(data);
-
-        else if ( ilocalSocket )
-            ilocalSocket->write(data);
+        if ( igenericSocket )
+            igenericSocket->write(data);
     }
 
     qint64 bytesAvailable() {
-        if ( itcpSocket )
-            return itcpSocket->bytesAvailable();
-
-        else if ( ilocalSocket )
-            return ilocalSocket->bytesAvailable();
+        if ( igenericSocket )
+            return igenericSocket->bytesAvailable();
 
         return 0;
     }
 
     void disconnectAllQtConnections() {
-        if ( itcpSocket )
-            QObject::disconnect(itcpSocket, 0, 0, 0);
-
-        if ( ilocalSocket )
-            QObject::disconnect(ilocalSocket, 0, 0, 0);
+        if ( igenericSocket )
+            QObject::disconnect(igenericSocket, 0, 0, 0);
     }
 
     void startTransaction() {
-        if (itcpSocket) itcpSocket->startTransaction();
-        if (ilocalSocket) ilocalSocket->startTransaction();
+        if ( igenericSocket && !igenericSocket->isTransactionStarted() )
+            igenericSocket->startTransaction();
     }
 
     void rollbackTransaction() {
-        if (itcpSocket) itcpSocket->rollbackTransaction();
-        if (ilocalSocket) ilocalSocket->rollbackTransaction();
+        if ( igenericSocket ) igenericSocket->rollbackTransaction();
     }
 
     void commitTransaction() {
-        if (itcpSocket) itcpSocket->commitTransaction();
-        if (ilocalSocket) ilocalSocket->commitTransaction();
+        if ( igenericSocket ) igenericSocket->commitTransaction();
     }
 
 public:
-    TBackend          ibackendType = ETcpSocket;
-    QTcpSocket*       itcpSocket   = nullptr;
-    QLocalSocket*     ilocalSocket = nullptr;
+    TBackend     ibackendType = ETcpSocket;
+    QIODevice* igenericSocket = nullptr;
 }; // class QSocket
 
 ///////////////////////////////////////////////////////////////////////////////

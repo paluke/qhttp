@@ -41,7 +41,7 @@ QHttpServer::listen(const QString &socketOrPort, const ServerHandler &handler) {
 
     d->initialize(ELocalSocket, this);
     d->ihandler = handler;
-    return d->ilocalServer->listen(socketOrPort);
+    return static_cast<QLocalServer*>(d->iserver.data())->listen(socketOrPort);
 }
 
 bool
@@ -50,19 +50,19 @@ QHttpServer::listen(const QHostAddress& address, quint16 port, const ServerHandl
 
     d->initialize(ETcpSocket, this);
     d->ihandler = handler;
-    return d->itcpServer->listen(address, port);
+    return static_cast<QTcpServer*>(d->iserver.data())->listen(address, port);
 }
 
 bool
 QHttpServer::isListening() const {
     const Q_D(QHttpServer);
 
-    if ( d->ibackend == ETcpSocket    &&    d->itcpServer )
-        return d->itcpServer->isListening();
-
-    else if ( d->ibackend == ELocalSocket    &&    d->ilocalServer )
-        return d->ilocalServer->isListening();
-
+    if (d->iserver ) {
+        if ( d->ibackend == ETcpSocket )
+            return static_cast<QTcpServer*>(d->iserver.data())->isListening();
+        else if (d->ibackend == ELocalSocket)
+            return static_cast<QLocalServer*>(d->iserver.data())->isListening();
+    }
     return false;
 }
 
@@ -70,12 +70,13 @@ void
 QHttpServer::stopListening() {
     Q_D(QHttpServer);
 
-    if ( d->itcpServer )
-        d->itcpServer->close();
-
-    if ( d->ilocalServer ) {
-        d->ilocalServer->close();
-        QLocalServer::removeServer( d->ilocalServer->fullServerName() );
+    if (d->iserver) {
+        if (d->ibackend == ETcpSocket)
+            static_cast<QTcpServer*>(d->iserver.data())->close();
+        else if (d->ibackend == ELocalSocket) {
+            static_cast<QLocalServer*>(d->iserver.data())->close();
+            QLocalServer::removeServer(static_cast<QLocalServer*>(d->iserver.data())->fullServerName());
+        }
     }
 }
 
@@ -109,8 +110,8 @@ QTcpServer*
 QHttpServer::tcpServer() const {
     Q_D(const QHttpServer);
 
-    if (d->ibackend == ETcpSocket)
-        return d->itcpServer.data();
+    if (d->ibackend == ETcpSocket && d->iserver)
+        return qobject_cast<QTcpServer*>(d->iserver.data());
 
     return nullptr;
 }
@@ -119,8 +120,8 @@ QLocalServer*
 QHttpServer::localServer() const {
     Q_D(const QHttpServer);
 
-    if (d->ibackend == ELocalSocket)
-        return d->ilocalServer.data();
+    if (d->ibackend == ELocalSocket && d->iserver)
+        return qobject_cast<QLocalServer*>(d->iserver.data());
 
     return nullptr;
 }

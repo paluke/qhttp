@@ -12,6 +12,7 @@
 #include "qhttpfwd.hpp"
 
 #include <QObject>
+#include <QIODevice>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
@@ -47,6 +48,8 @@ public:
 
     /** returns connected socket if the backend() == ELocalSocket. */
     QLocalSocket* localSocket() const;
+
+    QIODevice* genericSocket() const;
 
     /** creates a new QHttpConnection based on arguments. */
     static QHttpConnection* create(

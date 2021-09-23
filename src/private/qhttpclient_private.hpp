@@ -126,7 +126,7 @@ protected:
 private:
     void initTcpSocket() {
         QTcpSocket* sok    =  new QTcpSocket(q_func());
-        isocket.itcpSocket = sok;
+        isocket.igenericSocket = sok;
 
         QObject::connect(
                 sok,  &QTcpSocket::connected,
@@ -139,7 +139,7 @@ private:
         QObject::connect(
                 sok,  &QTcpSocket::bytesWritten,
                 [this](qint64){
-                    const auto& ts = isocket.itcpSocket;
+                    const auto& ts = isocket.igenericSocket;
                     if ( ts->bytesToWrite() == 0  &&  ilastRequest )
                         emit ilastRequest->allBytesWritten();
                 });
@@ -151,7 +151,7 @@ private:
 
     void initLocalSocket() {
         QLocalSocket* sok    = new QLocalSocket(q_func());
-        isocket.ilocalSocket = sok;
+        isocket.igenericSocket = sok;
 
         QObject::connect(
                 sok,  &QLocalSocket::connected,
@@ -164,7 +164,7 @@ private:
         QObject::connect(
                 sok,  &QLocalSocket::bytesWritten,
                 [this](qint64){
-                    const auto* ls = isocket.ilocalSocket;
+                    const auto* ls = isocket.igenericSocket;
                     if ( ls->bytesToWrite() == 0  &&  ilastRequest )
                         emit ilastRequest->allBytesWritten();
                 });

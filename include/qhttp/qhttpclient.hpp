@@ -148,6 +148,8 @@ public:
     /** returns local socket of the connection if backend() == ELocalSocket. */
     QLocalSocket* localSocket() const;
 
+    QIODevice* genericSocket() const;
+
 signals:
     /** emitted when a new HTTP connection to the server is established.
      * if you overload onRequestReady this signal won't be emitted.

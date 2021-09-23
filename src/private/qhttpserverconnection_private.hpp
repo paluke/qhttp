@@ -121,25 +121,25 @@ private:
             sslsok->setSocketDescriptor(sokDesc);
             sslsok->setPeerVerifyMode(QSslSocket::VerifyNone);
             sslsok->startServerEncryption();
-            isocket.itcpSocket = sslsok;
+            isocket.igenericSocket = sslsok;
 
         } else {
             auto sok = new QTcpSocket(q_func());
             sok->setSocketDescriptor(sokDesc);
-            isocket.itcpSocket = sok;
+            isocket.igenericSocket = sok;
         }
 
-        QObject::connect(isocket.itcpSocket, &QTcpSocket::readyRead, [this]() {
+        QObject::connect(isocket.igenericSocket, &QTcpSocket::readyRead, [this]() {
             onReadyRead();
         });
         QObject::connect(
-            isocket.itcpSocket, &QTcpSocket::bytesWritten, [this]() {
-                auto btw = isocket.itcpSocket->bytesToWrite();
+            isocket.igenericSocket, &QTcpSocket::bytesWritten, [this]() {
+                auto btw = isocket.igenericSocket->bytesToWrite();
                 if (btw == 0 && ilastResponse)
                     emit ilastResponse->allBytesWritten();
         });
         QObject::connect(
-            isocket.itcpSocket,
+            static_cast<QTcpSocket*>(isocket.igenericSocket),
             &QTcpSocket::disconnected,
             q_func(),
             &QHttpConnection::disconnected,
@@ -148,14 +148,14 @@ private:
 
     void initLocalSocket(qintptr sokDesc) {
         QLocalSocket* sok    = new QLocalSocket(q_func());
-        isocket.ilocalSocket = sok;
+        isocket.igenericSocket = sok;
         sok->setSocketDescriptor(sokDesc);
 
         QObject::connect(sok, &QLocalSocket::readyRead, [this]() {
             onReadyRead();
         });
         QObject::connect(sok, &QLocalSocket::bytesWritten, [this]() {
-            auto btw = isocket.ilocalSocket->bytesToWrite();
+            auto btw = isocket.igenericSocket->bytesToWrite();
             if (btw == 0 && ilastResponse)
                 emit ilastResponse->allBytesWritten();
         });

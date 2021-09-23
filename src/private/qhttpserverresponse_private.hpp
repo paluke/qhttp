@@ -35,8 +35,7 @@ public:
 
     void        initialize() {
         isocket.ibackendType = iconnection->backendType();
-        isocket.ilocalSocket = iconnection->localSocket();
-        isocket.itcpSocket   = iconnection->tcpSocket();
+        isocket.igenericSocket = iconnection->genericSocket();
 
         QObject::connect(iconnection,  &QHttpConnection::disconnected,
                          q_func(),     &QHttpResponse::deleteLater);

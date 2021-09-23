@@ -48,17 +48,13 @@ public:
         }
     };
 
-    using TTcpServer   = QScopedPointer<BackendServer<QTcpServer>>;
-    using TLocalServer = QScopedPointer<BackendServer<QLocalServer>>;
-
 public:
     quint32         itimeOut = 0;
     ServerHandler   ihandler = nullptr;
 
     TBackend        ibackend = ETcpSocket;
 
-    TTcpServer      itcpServer;
-    TLocalServer    ilocalServer;
+    QScopedPointer<QObject> iserver;
 
     ssl::Config     isslConfig;
 
@@ -73,12 +69,10 @@ public:
         ibackend = backend;
 
         if ( ibackend == ETcpSocket ) {
-            ilocalServer.reset( nullptr );
-            itcpServer.reset( new BackendServer<QTcpServer>(parent) );
+            iserver.reset( new BackendServer<QTcpServer>(parent) );
 
         } else if ( ibackend == ELocalSocket ) {
-            itcpServer.reset( nullptr );
-            ilocalServer.reset( new BackendServer<QLocalServer>(parent) );
+            iserver.reset( new BackendServer<QLocalServer>(parent) );
         }
     }
 

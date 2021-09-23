@@ -44,12 +44,17 @@ QHttpClient::backendType() const {
 
 QTcpSocket*
 QHttpClient::tcpSocket() const {
-    return d_func()->isocket.itcpSocket;
+    return qobject_cast<QTcpSocket*>(d_func()->isocket.igenericSocket);
 }
 
 QLocalSocket*
 QHttpClient::localSocket() const {
-    return d_func()->isocket.ilocalSocket;
+    return qobject_cast<QLocalSocket*>(d_func()->isocket.igenericSocket);
+}
+
+QIODevice*
+QHttpClient::genericSocket() const {
+    return d_func()->isocket.igenericSocket;
 }
 
 void

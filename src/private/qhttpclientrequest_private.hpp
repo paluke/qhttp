@@ -33,9 +33,8 @@ public:
     void        initialize() {
         iversion    = "1.1";
 
-        isocket.ibackendType  = iclient->backendType();
-        isocket.itcpSocket    = iclient->tcpSocket();
-        isocket.ilocalSocket  = iclient->localSocket();
+        isocket.ibackendType = iclient->backendType();
+        isocket.igenericSocket = iclient->genericSocket();
     }
 
     QByteArray  makeTitle();

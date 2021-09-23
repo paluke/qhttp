@@ -37,12 +37,17 @@ QHttpConnection::backendType() const {
 
 QTcpSocket*
 QHttpConnection::tcpSocket() const {
-    return d_func()->isocket.itcpSocket;
+    return qobject_cast<QTcpSocket*>(d_func()->isocket.igenericSocket);
 }
 
 QLocalSocket*
 QHttpConnection::localSocket() const {
-    return d_func()->isocket.ilocalSocket;
+    return qobject_cast<QLocalSocket*>(d_func()->isocket.igenericSocket);
+}
+
+QIODevice*
+QHttpConnection::genericSocket() const {
+    return d_func()->isocket.igenericSocket;
 }
 
 void
@@ -145,11 +150,10 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
 
     // set client information
     if ( isocket.ibackendType == ETcpSocket ) {
-        ilastRequest->d_func()->iremoteAddress = isocket.itcpSocket->peerAddress().toString();
-        ilastRequest->d_func()->iremotePort    = isocket.itcpSocket->peerPort();
-
+        ilastRequest->d_func()->iremoteAddress = static_cast<QTcpSocket*>(isocket.igenericSocket)->peerAddress().toString();
+        ilastRequest->d_func()->iremotePort    = static_cast<QTcpSocket*>(isocket.igenericSocket)->peerPort();
     } else if ( isocket.ibackendType == ELocalSocket ) {
-        ilastRequest->d_func()->iremoteAddress = isocket.ilocalSocket->fullServerName();
+        ilastRequest->d_func()->iremoteAddress = static_cast<QLocalSocket*>(isocket.igenericSocket)->fullServerName();
         ilastRequest->d_func()->iremotePort    = 0; // not used in local sockets
     }
 
@@ -167,11 +171,11 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
         isocket.rollbackTransaction();
 
         // Remove parenting and references
-        isocket.itcpSocket->setParent(nullptr);
+        isocket.igenericSocket->setParent(nullptr);
 
-        emit q_ptr->newWebsocketUpgrade(isocket.itcpSocket);
+        emit q_ptr->newWebsocketUpgrade(static_cast<QTcpSocket*>(isocket.igenericSocket));
 
-        isocket.itcpSocket = nullptr;
+        isocket.igenericSocket = nullptr;
         release();
 
         return 2;
