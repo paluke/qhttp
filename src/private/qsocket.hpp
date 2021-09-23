@@ -14,7 +14,6 @@
 
 #include <QTcpSocket>
 #include <QLocalSocket>
-#include <QWebSocketServer>
 #include <QUrl>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
@@ -148,7 +147,6 @@ public:
     TBackend          ibackendType = ETcpSocket;
     QTcpSocket*       itcpSocket   = nullptr;
     QLocalSocket*     ilocalSocket = nullptr;
-    QWebSocketServer* iwebSocket = nullptr;
 }; // class QSocket
 
 ///////////////////////////////////////////////////////////////////////////////
