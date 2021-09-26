@@ -41,15 +41,10 @@ public:
 
  virtual ~QHttpConnectionPrivate() = default;
 
- void createSocket(qintptr sokDesc, TBackend bend) {
-     isocket.ibackendType = bend;
+ void createSocket(qintptr sokDesc) {
 
-     if (bend == ETcpSocket) {
-         initTcpSocket(sokDesc);
+     initTcpSocket(sokDesc);
 
-     } else if (bend == ELocalSocket) {
-         initLocalSocket(sokDesc);
-     }
     }
 
     void release() {
@@ -141,27 +136,6 @@ private:
         QObject::connect(
             isocket.itcpSocket,
             &QTcpSocket::disconnected,
-            q_func(),
-            &QHttpConnection::disconnected,
-            Qt::QueuedConnection);
-    }
-
-    void initLocalSocket(qintptr sokDesc) {
-        QLocalSocket* sok    = new QLocalSocket(q_func());
-        isocket.ilocalSocket = sok;
-        sok->setSocketDescriptor(sokDesc);
-
-        QObject::connect(sok, &QLocalSocket::readyRead, [this]() {
-            onReadyRead();
-        });
-        QObject::connect(sok, &QLocalSocket::bytesWritten, [this]() {
-            auto btw = isocket.ilocalSocket->bytesToWrite();
-            if (btw == 0 && ilastResponse)
-                emit ilastResponse->allBytesWritten();
-        });
-        QObject::connect(
-            sok,
-            &QLocalSocket::disconnected,
             q_func(),
             &QHttpConnection::disconnected,
             Qt::QueuedConnection);

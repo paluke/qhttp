@@ -11,8 +11,8 @@ QHttpConnection::QHttpConnection(QHttpConnectionPrivate& dd, QHttpServer* parent
     : QObject(parent), d_ptr(&dd) { }
 
 void
-QHttpConnection::setSocketDescriptor(qintptr sokDescriptor, TBackend backendType) {
-    d_ptr->createSocket(sokDescriptor, backendType);
+QHttpConnection::setSocketDescriptor(qintptr sokDescriptor) {
+    d_ptr->createSocket(sokDescriptor);
 }
 
 QHttpConnection::~QHttpConnection() = default;
@@ -30,19 +30,9 @@ QHttpConnection::killConnection() {
     d_func()->isocket.close();
 }
 
-TBackend
-QHttpConnection::backendType() const {
-    return d_func()->isocket.ibackendType;
-}
-
 QTcpSocket*
 QHttpConnection::tcpSocket() const {
     return d_func()->isocket.itcpSocket;
-}
-
-QLocalSocket*
-QHttpConnection::localSocket() const {
-    return d_func()->isocket.ilocalSocket;
 }
 
 void
@@ -144,16 +134,11 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
     itempHeaderValue.clear();
 
     // set client information
-    if ( isocket.ibackendType == ETcpSocket ) {
-        ilastRequest->d_func()->iremoteAddress = isocket.itcpSocket->peerAddress().toString();
-        ilastRequest->d_func()->iremotePort    = isocket.itcpSocket->peerPort();
+    ilastRequest->d_func()->iremoteAddress = isocket.itcpSocket->peerAddress().toString();
+    ilastRequest->d_func()->iremotePort    = isocket.itcpSocket->peerPort();
 
-    } else if ( isocket.ibackendType == ELocalSocket ) {
-        ilastRequest->d_func()->iremoteAddress = isocket.ilocalSocket->fullServerName();
-        ilastRequest->d_func()->iremotePort    = 0; // not used in local sockets
-    }
 
-    if ( isocket.ibackendType == ETcpSocket && parser->upgrade ) {
+    if ( parser->upgrade ) {
         // QWebsocketServer will handle the tcp socket from there
         // Using QWebSocketServer::handleConnection
 

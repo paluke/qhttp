@@ -70,12 +70,8 @@ public:
         ikeepAlive = false;
 
         // create a tcp connection
-        if ( isocket.ibackendType == ETcpSocket ) {
-            initTcpSocket();
+        initTcpSocket();
 
-        } else if ( isocket.ibackendType == ELocalSocket ) {
-            initLocalSocket();
-        }
     }
 
 public:
@@ -146,31 +142,6 @@ private:
         QObject::connect(
                 sok,      &QTcpSocket::disconnected,
                 q_func(), &QHttpClient::disconnected
-                );
-    }
-
-    void initLocalSocket() {
-        QLocalSocket* sok    = new QLocalSocket(q_func());
-        isocket.ilocalSocket = sok;
-
-        QObject::connect(
-                sok,  &QLocalSocket::connected,
-                [this](){ onConnected(); }
-                );
-        QObject::connect(
-                sok,  &QLocalSocket::readyRead,
-                [this](){ onReadyRead(); }
-                );
-        QObject::connect(
-                sok,  &QLocalSocket::bytesWritten,
-                [this](qint64){
-                    const auto* ls = isocket.ilocalSocket;
-                    if ( ls->bytesToWrite() == 0  &&  ilastRequest )
-                        emit ilastRequest->allBytesWritten();
-                });
-        QObject::connect(
-                sok,       &QLocalSocket::disconnected,
-                q_func(),  &QHttpClient::disconnected
                 );
     }
 

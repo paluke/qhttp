@@ -37,19 +37,9 @@ QHttpClient::killConnection() {
     d->isocket.close();
 }
 
-TBackend
-QHttpClient::backendType() const {
-    return d_func()->isocket.ibackendType;
-}
-
 QTcpSocket*
 QHttpClient::tcpSocket() const {
     return d_func()->isocket.itcpSocket;
-}
-
-QLocalSocket*
-QHttpClient::localSocket() const {
-    return d_func()->isocket.ilocalSocket;
 }
 
 void
@@ -107,30 +97,14 @@ QHttpClient::request(THttpMethod method, QUrl url,
         d_ptr->ilastRequest->d_ptr->iurl     = url;
     };
 
-    // connecting to host/server must be the last thing. (after all function handlers and ...)
-    // check for type
-    if ( url.scheme().toLower() == QLatin1String("file") ) {
-        d->isocket.ibackendType = ELocalSocket;
-        d->initializeSocket();
+    d->initializeSocket();
 
-        requestCreator();
+    requestCreator();
 
-        if ( d->isocket.isOpen() )
-            d->onConnected();
-        else
-            d->isocket.connectTo(url);
-
-    } else {
-        d->isocket.ibackendType = ETcpSocket;
-        d->initializeSocket();
-
-        requestCreator();
-
-        if ( d->isocket.isOpen() )
-            d->onConnected();
-        else
-            d->isocket.connectTo(url.host(), url.port(80));
-    }
+    if ( d->isocket.isOpen() )
+        d->onConnected();
+    else
+        d->isocket.connectTo(url.host(), url.port(80));
 
     return true;
 }

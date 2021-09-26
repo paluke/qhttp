@@ -38,18 +38,6 @@ public:
     void setSslConfig(ssl::Config);
     auto sslConfig() const -> const ssl::Config&;
 
-    /** starts a TCP or Local (unix domain socket) server.
-     * if you provide a server handler, the newRequest() signal won't be
-     * emitted.
-     *
-     * @param socketOrPort could be a tcp port number as "8080" or a unix
-     * socket name as "/tmp/sample.socket" or "sample.socket".  @param handler
-     * optional server handler (a lambda, std::function, ...) @return false if
-     * listening fails.
-     */
-    bool listen(const QString& socketOrPort,
-            const ServerHandler& handler = nullptr);
-
     /** starts a TCP server on specified address and port.
      * if you provide a server handler, the newRequest() signal won't be
      * emitted.
@@ -81,9 +69,6 @@ public:
      *  a zero (0) value disables timer for new connections. */
     void setTimeOut(quint32);
 
-    /** returns the QHttpServer's backend type. */
-    TBackend backendType() const;
-
 signals:
     /** emitted when a client makes a new request to the server if you do not
      * override.
@@ -103,10 +88,6 @@ protected:
 
     /// returns the tcp server instance if the backend() == ETcpSocket
     QTcpServer* tcpServer() const;
-
-    /// returns the local server instance if the backend() == ELocalSocket
-    QLocalServer* localServer() const;
-
 
     /** is called when server accepts a new connection.
      * you can override this function for using a thread-pool or ... some other

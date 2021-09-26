@@ -39,20 +39,14 @@ public:
      */
     void onHandler(const ServerHandler& handler);
 
-    /** returns the backend type of the connection. */
-    TBackend backendType() const;
-
     /** returns connected socket if the backend() == ETcpSocket. */
     QTcpSocket* tcpSocket() const;
 
-    /** returns connected socket if the backend() == ELocalSocket. */
-    QLocalSocket* localSocket() const;
-
     /** creates a new QHttpConnection based on arguments. */
     static QHttpConnection* create(
-            qintptr sokDescriptor, TBackend backendType, QHttpServer* parent) {
+            qintptr sokDescriptor, QHttpServer* parent) {
         QHttpConnection* conn = new QHttpConnection(parent);
-        conn->setSocketDescriptor(sokDescriptor, backendType);
+        conn->setSocketDescriptor(sokDescriptor);
         return conn;
     }
 
@@ -73,7 +67,7 @@ protected:
     explicit QHttpConnection(QHttpServer *parent);
     explicit QHttpConnection(QHttpConnectionPrivate&, QHttpServer*);
 
-    void setSocketDescriptor(qintptr sokDescriptor, TBackend backendType);
+    void setSocketDescriptor(qintptr sokDescriptor);
     void timerEvent(QTimerEvent*) override;
 
     friend class QHttpServer;

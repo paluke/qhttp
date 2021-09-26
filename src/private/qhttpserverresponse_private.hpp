@@ -34,8 +34,6 @@ public:
     virtual    ~QHttpResponsePrivate() = default;
 
     void        initialize() {
-        isocket.ibackendType = iconnection->backendType();
-        isocket.ilocalSocket = iconnection->localSocket();
         isocket.itcpSocket   = iconnection->tcpSocket();
 
         QObject::connect(iconnection,  &QHttpConnection::disconnected,

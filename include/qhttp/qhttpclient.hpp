@@ -139,14 +139,8 @@ public:
                 std::forward<Handler&&>(func));
     }
 
-    /** returns the backend type of this client. */
-    TBackend backendType() const;
-
     /** returns tcp socket of the connection if backend() == ETcpSocket. */
     QTcpSocket* tcpSocket() const;
-
-    /** returns local socket of the connection if backend() == ELocalSocket. */
-    QLocalSocket* localSocket() const;
 
 signals:
     /** emitted when a new HTTP connection to the server is established.

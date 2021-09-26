@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
 
     using namespace qhttp::server;
     QHttpServer server(&app);
-    server.listen(port, [](QHttpRequest* req, QHttpResponse* res) {
+    server.listen(QHostAddress::Any, port.toUInt(), [](QHttpRequest* req, QHttpResponse* res) {
         req->collectData(8*1024*1024); // maximum 8MB of data for each post request
         // the better approach is to use req->onData(...)
 

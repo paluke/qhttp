@@ -54,7 +54,7 @@ int main(int argc, char ** argv) {
     QHttpServer server{&app};
     server.setSslConfig(qhttp::ssl::Config{":/key", ":/cert"});
 
-    server.listen(argv[1], [](QHttpRequest* req, QHttpResponse* resp) {
+    server.listen(QHostAddress::Any, atoi(argv[1]), [](QHttpRequest* req, QHttpResponse* resp) {
         resp->setStatusCode(qhttp::ESTATUS_OK);
         resp->addHeader("Connection", "Close");
         resp->end("Hello TLS/SSL world\n");

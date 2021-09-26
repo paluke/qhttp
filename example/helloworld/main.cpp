@@ -20,12 +20,12 @@
 namespace {
 ///////////////////////////////////////////////////////////////////////////////
 
-void runServer(const QString& portOrPath) {
+void runServer(const QString& port) {
     using namespace qhttp::server;
 
     QHttpServer server(qApp);
     // listening tcp port or Unix path
-    server.listen(portOrPath, [](QHttpRequest* req, QHttpResponse* res) {
+    server.listen(QHostAddress::Any, port.toUInt(), [](QHttpRequest* req, QHttpResponse* res) {
         req->collectData();
 
         req->onEnd([req, res](){
@@ -68,7 +68,7 @@ void runServer(const QString& portOrPath) {
     });
 
     if ( !server.isListening() ) {
-        fprintf(stderr, "failed. can not listen at port %s!\n", qPrintable(portOrPath));
+        fprintf(stderr, "failed. can not listen at port %s!\n", qPrintable(port));
         return;
     }
 

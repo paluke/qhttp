@@ -129,14 +129,6 @@ enum TStatusCode {
      ESTATUS_HTTP_VERSION_NOT_SUPPORTED         = 505
 };
 
-/// The backend of QHttp library
-enum TBackend {
-    /// client / server work on top of TCP/IP stack. (default, including ssl)
-    ETcpSocket     = 0,
-    /// client / server work on local socket (unix socket).
-    ELocalSocket   = 2
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 namespace server {
 ///////////////////////////////////////////////////////////////////////////////

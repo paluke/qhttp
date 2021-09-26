@@ -84,12 +84,12 @@ int main(int argc, char ** argv) {
     // dumb (trivial) connection counter
     quint64 iconnectionCounter = 0;
 
-    QString portOrUnixSocket("10022"); // default: TCP port 10022
+    QString port("10022"); // default: TCP port 10022
     if ( argc > 1 )
-        portOrUnixSocket = argv[1];
+        port = argv[1];
 
     QHttpServer server(&app);
-    server.listen(portOrUnixSocket, [&](QHttpRequest* req, QHttpResponse* res){
+    server.listen(QHostAddress::Any, port.toUInt(), [&](QHttpRequest* req, QHttpResponse* res){
         new ClientHandler(++iconnectionCounter, req, res);
         // this ClientHandler object will be deleted automatically when:
         // socket disconnects (automatically after data has been sent to the client)
@@ -100,7 +100,7 @@ int main(int argc, char ** argv) {
     });
 
     if ( !server.isListening() ) {
-        fprintf(stderr, "can not listen on %s!\n", qPrintable(portOrUnixSocket));
+        fprintf(stderr, "can not listen on %s!\n", qPrintable(port));
         return -1;
     }
 
